@@ -1,14 +1,18 @@
 'use strict'
 import * as PIXI from 'pixi.js'
+import { keyboard } from './gameObjects/gameController'
 
 // Aliases
 const Application = PIXI.Application
-// const Container = PIXI.Container
+const Container = PIXI.Container
 const loader = PIXI.loader
 const resources = PIXI.loader.resources
-// const TextureCache = PIXI.utils.TextureCache
+const id = PIXI.loader.id
+const TextureCache = PIXI.utils.TextureCache
 const Sprite = PIXI.Sprite
-// const Rectangle = PIXI.Rectangle
+const Rectangle = PIXI.Rectangle
+
+const swordImg = '../../public/sword.png'
 
 // Create a Pixi Application
 const app = new Application({
@@ -18,50 +22,7 @@ const app = new Application({
   transparent: false,
   resolution: 1
 })
-function keyboard (value) {
-  const key = {}
-  key.value = value
-  key.isDown = false
-  key.isUp = true
-  key.press = undefined
-  key.release = undefined
-  // The `downHandler`
-  key.downHandler = event => {
-    if (event.key === key.value) {
-      if (key.isUp && key.press) key.press()
-      key.isDown = true
-      key.isUp = false
-      event.preventDefault()
-    }
-  }
-  // The `upHandler`
-  key.upHandler = event => {
-    if (event.key === key.value) {
-      if (key.isDown && key.release) key.release()
-      key.isDown = false
-      key.isUp = true
-      event.preventDefault()
-    }
-  }
-  // Attach event listeners
-  const downListener = key.downHandler.bind(key)
-  const upListener = key.upHandler.bind(key)
 
-  window.addEventListener(
-    'keydown', downListener, false
-  )
-  window.addEventListener(
-    'keyup', upListener, false
-  )
-
-  // Detach event listeners
-  key.unsubscribe = () => {
-    window.removeEventListener('keydown', downListener)
-    window.removeEventListener('keyup', upListener)
-  }
-
-  return key
-}
 // The application will create a renderer using WebGL, if possible,
 // with a fallback to a canvas render. It will also setup the ticker
 // and the root stage PIXI.Container
@@ -82,8 +43,8 @@ let state
 function setup () {
   // Setup the position of the sword
   sword = new Sprite(resources['../../public/sword.png'].texture)
-  sword.x = app.renderer.width / 2
-  sword.y = app.renderer.height / 2
+  sword.x = 300
+  sword.y = 500
   sword.anchor.x = 0.5
   sword.anchor.y = 0.5
   sword.vx = 0
@@ -91,10 +52,10 @@ function setup () {
   // Add the sword to the scene we are building
   app.stage.addChild(sword)
   // Capture the keyboard arrow keys
-  const left = keyboard('ArrowLeft')
-  const up = keyboard('ArrowUp')
-  const right = keyboard('ArrowRight')
-  const down = keyboard('ArrowDown')
+  const up = keyboard('w')
+  const left = keyboard('a')
+  const down = keyboard('s')
+  const right = keyboard('d')
 
   // Left arrow key `press` method
   left.press = () => {
